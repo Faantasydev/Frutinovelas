@@ -27,4 +27,4 @@ The workflow installs dependencies, checks/tests/builds the app, validates the s
 
 Push the branch containing the workflow to GitHub; a push runs the verification workflow. Set the Vercel environment variables above and redeploy the Vercel project. Sign in, edit the scenes, click **Generar video**, then play/download the completed MP4 from **Tus videos**.
 
-The current onboarding container cannot inspect Actions runs through the GitHub API (the network request is blocked with `403`). After configuring the Vercel token, verify the run in the repository's **Actions** page. Never paste the token into chat or the frontend.
+After configuring the Vercel token, verify a workflow run and its uploaded artifact in the repository's **Actions** page. If dispatch or status checks return `403`, confirm the fine-grained token is limited to this repository with Actions read/write permission and that GitHub API egress is available. Never paste the token into chat or the frontend.
