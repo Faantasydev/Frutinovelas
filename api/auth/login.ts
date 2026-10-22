@@ -1,10 +1,11 @@
 import { createHash, timingSafeEqual } from 'node:crypto';
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { ApiError, assertSameOrigin, issueSession, jsonError, setSessionCookie, requiredEnv } from '../../src/server/auth';
+import { ApiError, assertSameOrigin, issueSession, jsonError, setPrivateResponseHeaders, setSessionCookie, requiredEnv } from '../../src/server/auth';
 import { clientIp } from '../../src/server/github';
 import { enforceLoginLimit } from '../../src/server/limits';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
+  setPrivateResponseHeaders(res);
   if (req.method !== 'POST') { res.setHeader('Allow','POST');return res.status(405).json({error:'Método no permitido.'}); }
   try {
     assertSameOrigin(req);

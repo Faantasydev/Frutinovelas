@@ -1,4 +1,5 @@
 import type { VercelRequest } from '@vercel/node';
+import { createHash } from 'node:crypto';
 import { ApiError, requiredEnv } from './auth';
 
 const OWNER = 'Faantasydev';
@@ -15,7 +16,9 @@ function headers(): HeadersInit {
 }
 
 async function github(path: string, init?: RequestInit): Promise<Response> {
-  const response = await fetch(`${API}${path}`, { ...init, headers: { ...headers(), ...init?.headers } });
+  let response:Response;
+  try {response=await fetch(`${API}${path}`, { ...init, headers: { ...headers(), ...init?.headers } });}
+  catch {throw new ApiError(503,'No se pudo conectar con GitHub Actions. Revisa la disponibilidad del servicio.');}
   if (!response.ok) {
     const detail = await response.text().catch(() => '');
     const status = response.status === 401 || response.status === 403 ? 503 : 502;
@@ -23,8 +26,6 @@ async function github(path: string, init?: RequestInit): Promise<Response> {
   }
   return response;
 }
-
-export function runTitle(sessionId: string, jobId: string): string { return `${RUN_PREFIX}${sessionId}:${jobId}`; }
 
 export async function dispatchRender(sessionId: string, jobId: string, scriptJson: string, title: string): Promise<void> {
   const ref = process.env.FRUTINOVELAS_GITHUB_REF || 'work';
@@ -83,5 +84,5 @@ export async function downloadArtifact(artifactId: number): Promise<Uint8Array> 
 export function clientIp(req: VercelRequest): string {
   const value = req.headers['x-forwarded-for'];
   const first = Array.isArray(value) ? value[0] : value?.split(',')[0];
-  return (first ?? req.socket.remoteAddress ?? 'unknown').trim().slice(0, 100);
+  return createHash('sha256').update((first ?? req.socket.remoteAddress ?? 'unknown').trim().slice(0, 100)).digest('hex');
 }

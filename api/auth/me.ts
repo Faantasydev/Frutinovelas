@@ -1,7 +1,8 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { getSession } from '../../src/server/auth';
+import { getSession, setPrivateResponseHeaders } from '../../src/server/auth';
 
 export default function handler(req: VercelRequest, res: VercelResponse) {
+  setPrivateResponseHeaders(res);
   if(req.method!=='GET'){res.setHeader('Allow','GET');return res.status(405).json({error:'Método no permitido.'});}
   const session=getSession(req);
   if(!session)return res.status(401).json({authenticated:false});

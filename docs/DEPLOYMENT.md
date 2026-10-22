@@ -17,7 +17,7 @@ Use the free Upstash Redis tier if it meets the account's current limits. The AP
 
 ## Workflow
 
-The browser submits a validated script to `POST /api/jobs`. A same-origin, HTTP-only signed session cookie is required. The server applies Upstash limits (10 login attempts per IP per 15 minutes, 5 renders per session and 15 per IP per hour, 10 status reads per minute, and 10 video requests per minute), caps each script at 60 seconds and 20 scenes, and allows no more than two active renders per session. It dispatches `.github/workflows/render.yml` using the server-only GitHub token.
+The browser submits a validated script to `POST /api/jobs`. A same-origin, HTTP-only signed session cookie is required. The server applies Upstash limits (10 login attempts per IP per 15 minutes, 5 renders per session and 15 per IP per hour, 10 status reads per minute, and 10 video requests per minute), caps each script at 60 seconds and 20 scenes, and allows no more than two active renders per session. IPs are hashed before use as rate-limit keys. It dispatches `.github/workflows/render.yml` using the server-only GitHub token.
 
 Each login gets a random session identifier; each render gets a UUID. The workflow title and artifact name contain both identifiers, and status/video endpoints only return jobs associated with the current session. Videos are proxied from GitHub Actions artifacts through the authenticated Vercel function, including byte-range support for playback. Sessions expire after eight hours. Logging out ends access to those session's jobs. GitHub artifact access outside this app still follows the repository's own visibility and permissions; keep the repository private if workflow artifacts must not be accessible to repository readers.
 

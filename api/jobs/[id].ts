@@ -1,9 +1,10 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { ApiError, jsonError, requireSession } from '../../src/server/auth';
+import { ApiError, jsonError, requireSession, setPrivateResponseHeaders } from '../../src/server/auth';
 import { getArtifact, getRun, mapStatus } from '../../src/server/github';
 import { enforceStatusLimit } from '../../src/server/limits';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
+  setPrivateResponseHeaders(res);
   if(req.method!=='GET'){res.setHeader('Allow','GET');return res.status(405).json({error:'Método no permitido.'});}
   try {
     const session=requireSession(req);await enforceStatusLimit(session.sid);

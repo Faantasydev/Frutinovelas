@@ -1,13 +1,14 @@
 import { randomUUID } from 'node:crypto';
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { validateScript, type EpisodeScript } from '../../src/script';
-import { ApiError, assertSameOrigin, jsonError, requireSession } from '../../src/server/auth';
+import { ApiError, assertSameOrigin, jsonError, requireSession, setPrivateResponseHeaders } from '../../src/server/auth';
 import { clientIp, dispatchRender, getArtifact, jobIdFromRun, jobTitleFromRun, listSessionRuns, mapStatus } from '../../src/server/github';
 import { enforceRenderLimit, enforceStatusLimit } from '../../src/server/limits';
 
 export const config = { api: { bodyParser: { sizeLimit: '64kb' } } };
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
+  setPrivateResponseHeaders(res);
   try {
     const session=requireSession(req);
     if(req.method==='GET'){

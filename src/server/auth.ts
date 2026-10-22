@@ -65,6 +65,12 @@ export function clearSessionCookie(res: VercelResponse): void {
   res.setHeader('Set-Cookie', `${COOKIE}=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0`);
 }
 
+export function setPrivateResponseHeaders(res:VercelResponse):void{
+  res.setHeader('Cache-Control','private, no-store');
+  res.setHeader('Vary','Cookie');
+  res.setHeader('X-Content-Type-Options','nosniff');
+}
+
 export function assertSameOrigin(req: VercelRequest): void {
   const origin = req.headers.origin;
   if (!origin) return;
@@ -75,6 +81,7 @@ export function assertSameOrigin(req: VercelRequest): void {
 }
 
 export function jsonError(res: VercelResponse, error: unknown): void {
+  setPrivateResponseHeaders(res);
   const status = error instanceof ApiError ? error.status : 500;
   const message = error instanceof Error ? error.message : 'Error inesperado.';
   if (status === 429) res.setHeader('Retry-After', '3600');
