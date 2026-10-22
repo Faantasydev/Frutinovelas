@@ -1,0 +1,31 @@
+{
+  "name": "frutinovelas-studio",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "build": "tsc -b && vite build",
+    "test": "vitest run",
+    "remotion": "remotion studio src/remotion/index.ts",
+    "render": "remotion render src/remotion/index.ts FrutinovelasEpisode out/frutinovelas.mp4 --codec=h264 --browser-executable=${CHROME_PATH:-/usr/bin/chromium}",
+    "render:still": "remotion still src/remotion/index.ts FrutinovelasEpisode out/preview.png",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@remotion/cli": "^4.0.354",
+    "@remotion/player": "^4.0.354",
+    "@vitejs/plugin-react": "^4.3.4",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "remotion": "^4.0.354",
+    "vite": "^5.4.14"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5",
+    "@types/node": "^22.13.4",
+    "typescript": "^5.7.3",
+    "vitest": "^2.1.9"
+  }
+}

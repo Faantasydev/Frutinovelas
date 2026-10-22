@@ -1,0 +1,41 @@
+name: Render episode
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-and-render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: browser-actions/setup-chrome@v1
+        id: chrome
+      - name: Install dependencies
+        run: npm ci
+      - name: Test, typecheck, and build
+        run: npm test && npm run typecheck && npm run build
+      - name: Render five-second episode
+        run: npm run render
+        env:
+          CHROME_PATH: ${{ steps.chrome.outputs.chrome-path }}
+      - name: Verify MP4 metadata and decode
+        run: |
+          ffprobe -v error -select_streams v:0 -show_entries stream=codec_name,width,height,r_frame_rate,duration -of json out/frutinovelas.mp4 > /tmp/video.json
+          node --input-type=module -e "import fs from 'node:fs'; const x=JSON.parse(fs.readFileSync('/tmp/video.json')); const s=x.streams[0]; if(s.codec_name!=='h264'||s.width!==1080||s.height!==1920||s.r_frame_rate!=='30/1'||Math.abs(Number(s.duration)-5)>0.04) { console.error(s); process.exit(1) } console.log(s)"
+          ffmpeg -v error -i out/frutinovelas.mp4 -f null -
+      - uses: actions/upload-artifact@v4
+        with:
+          name: frutinovelas-episode
+          path: out/frutinovelas.mp4
+          if-no-files-found: error
