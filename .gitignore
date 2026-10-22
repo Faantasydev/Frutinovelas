@@ -4,3 +4,5 @@ out/
 .remotion/
 *.log
 *.tsbuildinfo
+.env*
+!.env.example

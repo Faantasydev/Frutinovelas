@@ -1,4 +1,4 @@
-import { AbsoluteFill, interpolate, Sequence, useCurrentFrame } from 'remotion';
+import { AbsoluteFill, interpolate, Sequence, useCurrentFrame, useVideoConfig } from 'remotion';
 import { initialScript, type EpisodeScript } from '../script';
 import { Banana, Strawberry } from './characters';
 
@@ -19,6 +19,8 @@ const ShotView = ({ shot }: { shot: EpisodeScript['shots'][number] }) => {
 
 export const Episode = ({ script = initialScript }: { script?: EpisodeScript }) => {
   const frame=useCurrentFrame();
-  const fade=interpolate(frame,[0,9,141,150],[0,1,1,0],{extrapolateLeft:'clamp',extrapolateRight:'clamp'});
+  const {durationInFrames}=useVideoConfig();
+  const fadeFrames=Math.min(9,Math.floor(durationInFrames/4));
+  const fade=interpolate(frame,[0,fadeFrames,durationInFrames-fadeFrames,durationInFrames],[0,1,1,0],{extrapolateLeft:'clamp',extrapolateRight:'clamp'});
   return <AbsoluteFill style={{opacity:fade}}>{script.shots.map((shot,i)=><Sequence key={`${shot.start}-${i}`} from={shot.start} durationInFrames={shot.end-shot.start}><ShotView shot={shot}/></Sequence>)}</AbsoluteFill>;
 };

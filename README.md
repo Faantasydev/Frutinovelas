@@ -1,6 +1,6 @@
 # Frutinovelas Studio
 
-Prototipo inicial para escribir mini novelas de frutas y renderizarlas en video vertical con React y Remotion.
+Editor web para crear mini novelas de frutas y generar videos verticales reales con React, Remotion y GitHub Actions.
 
 ## Requisitos y comandos
 
@@ -14,9 +14,11 @@ npm run build     # TypeScript + bundle web para Vercel
 npm run render    # MP4 H.264 de 5 s, 1080x1920, 30 fps en out/
 ```
 
-El guion inicial y su validador están en `src/script.ts`; la composición se puede previsualizar en Remotion Studio con `npm run remotion`. El botón Exportar muestra el comando local de render; no ejecuta un render en el navegador.
+El editor visual permite ajustar personajes, diálogos, cámara y duración de cada escena. El reproductor de Remotion refleja los cambios del guion.
 
-Kokoro es opcional y local. Consulta [docs/KOKORO.md](docs/KOKORO.md) para instalar el paquete y el modelo español sin APIs de pago. El primer render no depende de TTS.
+La generación desde el botón requiere desplegar los endpoints `/api` en Vercel y configurar las variables de servidor descritas en [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md). El MP4 se produce en GitHub Actions desde el guion enviado y vuelve a la interfaz mediante un endpoint protegido asociado al trabajo y la sesión.
+
+Kokoro es opcional y local. Consulta [docs/KOKORO.md](docs/KOKORO.md) para instalar el paquete y el modelo español sin APIs de pago. El render no depende de TTS.
 
 ## Vercel
 
